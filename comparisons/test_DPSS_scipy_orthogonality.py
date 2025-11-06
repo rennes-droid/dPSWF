@@ -8,9 +8,9 @@ Created on Wed Jul 16 11:36:12 2025
 import numpy                as np
 from   scipy.signal.windows import dpss
 
-OrderN = 30 # maximum index of psi function
+OrderN = 19 # maximum index of psi function
 NW     = 10  # c/pi parameter, or relative resolution in frequency bins
-Npts   = 2_000 # ok up to 20 000 000 at least
+Npts   = 2_000_000 # ok up to 20 000 000 at least
 Keigen = 19 # < OrderN+1, maximum index for computation of orthogonality
 
 c = np.pi*NW

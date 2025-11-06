@@ -14,9 +14,9 @@ from   dPSWF                        import PSWF
 from   perf.utils.LibWindowSpectrum import FourierTransform
 from   perf.utils.LibWindowPerf     import concentrationDefect
 
-OrderN = 21 # maximum index of psi function
+OrderN = 19 # maximum index of psi function
 NW     = 10  # c/pi parameter, or relative resolution in frequency bins
-Npts   = 10_000 # ok up to 10 000 000 at least
+Npts   = 10_000 # 
 Kplot  = 3  # < OrderN+1
 Keigen = 10
 

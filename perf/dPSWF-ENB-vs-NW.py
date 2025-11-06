@@ -5,24 +5,33 @@ Created on Wed Oct 15 16:23:13 2025
 @author: fbondu
 """
 
-import numpy                as np
-import matplotlib.pyplot    as plt
-import PSWF_Legendre        as MyPSWF
-from   WindowEval           import ENB_bin
+import numpy                    as     np
+import matplotlib.pyplot        as     plt
+from   dPSWF                    import PSWF
+from   perf.utils.LibWindowPerf import ENB_bin
+from   scipy.optimize           import fsolve
 
 OrderN = 21 # maximum index of psi function
-NW     = 10  # c/pi parameter, or relative resolution in frequency bins
 Npts   = 10_000 # ok up to 10 000 000 at least
-Kplot  = 3  # < OrderN+1
-Keigen = 10
 
-VecNW = np.linspace(1.5,100,200)
+def Navg_vs_NW(NW):
+    return 2*NW - np.log(NW)
+    #return np.floor(2*NW - np.log(NW)).astype(int) won’t do well
+    # arXiv:2103.11586v1 Karnik et al. 2021
+
+def NW_vs_Navg(Navg):
+    def eqzero(NW, Navg):
+        return Navg - Navg_vs_NW(NW)
+    res = fsolve(eqzero, Navg/2, args=(Navg,))
+    return res
+
+VecNW = np.linspace(3,100,200)
 ENB   = np.copy(VecNW)
 
 for k,NW in enumerate(VecNW):
     c     = np.pi*NW
-    PSWF  = MyPSWF.PSWF(c, OrderN, Npts, normalizationType='window')
-    wpsi0 = PSWF.psi_functions[0]
+    Psis  = PSWF(c, OrderN, Npts, normalizationType='window')
+    wpsi0 = Psis.psi_functions[0]
     ENB[k] = ENB_bin(wpsi0)
 
 plt.figure(1)
@@ -35,10 +44,10 @@ plt.ylabel('ENB')
 VecNavg = np.linspace(2,100,num=99)
 gain    = np.copy(VecNavg)
 for k,Navg in enumerate(VecNavg):
-    NW    = (1+Navg)/2
+    NW    = NW_vs_Navg(Navg)
     c     = np.pi*NW
-    PSWF  = MyPSWF.PSWF(c, OrderN, Npts, normalizationType='window')
-    wpsi0 = PSWF.psi_functions[0]
+    Psis  = PSWF(c, OrderN, Npts, normalizationType='window')
+    wpsi0 = Psis.psi_functions[0]
     ENB_pswf  = ENB_bin(wpsi0)
     ENB_welch = 1.5*Navg
     gain[k] = ENB_welch/ENB_pswf
